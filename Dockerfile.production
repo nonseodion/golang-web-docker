@@ -1,6 +1,6 @@
-FROM registry.semaphoreci.com/golang:1.16 as builder
+FROM semaphoreci/golang:1.14 as builder
 ENV APP_USER app
-ENV APP_HOME go/src/mathapp
+ENV APP_HOME /go/src/mathapp
 RUN groupadd $APP_USER && useradd -g $APP_USER -m -l $APP_USER
 RUN mkdir -p $APP_HOME && chown -R $APP_USER:$APP_USER $APP_HOME
 WORKDIR $APP_HOME
@@ -10,13 +10,12 @@ RUN go mod download
 RUN go mod verify
 RUN go build -o mathapp
 FROM debian:buster
-FROM registry.semaphoreci.com/golang:1.16
+FROM semaphoreci/golang:1.14
 ENV APP_USER app
-ENV APP_HOME go/src/mathapp
+ENV APP_HOME /go/src/mathapp
 RUN groupadd $APP_USER && useradd -g $APP_USER -m -l $APP_USER
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
-USER $APP_USER
 COPY src/conf/ conf/
 COPY src/views/ views/
 COPY --chown=0:0 --from=builder $APP_HOME/mathapp $APP_HOME
